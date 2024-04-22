@@ -1,4 +1,3 @@
-pickle
 matplotlib.pyplat
 numpy
 pandas
