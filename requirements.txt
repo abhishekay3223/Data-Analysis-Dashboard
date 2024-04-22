@@ -1,4 +1,4 @@
-matplotlib.pyplat
+matplotlib.pyplot
 numpy
 pandas
 sklearn
