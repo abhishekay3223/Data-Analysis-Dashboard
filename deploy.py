@@ -44,6 +44,9 @@ if age_filter_on:
 else:
     filtered_data = data
 st.sidebar.header("Apply filters:")
+
+
+
 # Display filtered data
 if st.checkbox("Show Filtered Data"):
     st.write("Filtered Data:")
@@ -75,7 +78,7 @@ shipstate = st.sidebar.multiselect(
     options = data["ship_state"].unique(),
     default = data["ship_state"].unique()
 )
-# Assuming `data` is your DataFrame
+#`data` is your DataFrame
 
 
 df_selection = data.query("Age_Group == @agegroup & Gender == @gender & Month == @month & ship_state == @shipstate")
@@ -130,99 +133,174 @@ for i, var in enumerate(numeric_variables):
             fig = px.histogram(data[var], title=f"Histogram of {var}")
             st.plotly_chart(fig)
 
+###################
+
 import streamlit as st
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Assuming your data is loaded into a Pandas DataFrame named 'data'
+# Load data
+  # Replace 'data.csv' with the actual path to your data file
 
-categorical_variables = ['Gender', 'Age_Group', 'Status', 'Channel ', 'Category']
+# Get the list of categorical variables
+categorical_variables = ['Gender', 'Age_Group', 'Status', 'Category']
 
 # Function to create a bar chart for a categorical variable
 def create_bar_chart(var):
-    return st.bar_chart(data[var].value_counts())
-
-# Dropdown menu setup
-selected_var = st.sidebar.selectbox("Select Variable for Frequency Distribution:", categorical_variables)
-
-# Display chart based on selected variable
-with st.expander(f"Frequency Distribution of {selected_var}"):
-    create_bar_chart(selected_var)
-
-
-
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt  # Only imported for compatibility (consider alternatives)
-
-# Assuming your data is loaded into a Pandas DataFrame named 'data'
-
-categorical_variables = ['Gender', 'Age_Group', 'Status', 'Channel ', 'Category']
+    chart_data = data[var].value_counts()
+    st.bar_chart(chart_data)
 
 # Function to create a pie chart for a categorical variable
 def create_pie_chart(var):
-    fig, ax = plt.subplots(figsize=(5, 5))  # Set appropriate figure size
+    fig, ax = plt.subplots(figsize=(5, 5))
     data[var].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax)
     ax.set_ylabel('')
     ax.set_title(f'Percentage Distribution of {var}')
     return fig
 
-# Dropdown menu setup
-selected_var = st.sidebar.selectbox("Select Variable for Percentage Distribution:", categorical_variables)
-
-# Display chart based on selected variable
-col1, col2 = st.columns([1, 2])  # Create columns for layout
-with col1:
-    fig = create_pie_chart(selected_var)
-    st.pyplot(fig)
-
-
-import streamlit as st
-import pandas as pd
-import seaborn as sns  # Import seaborn for grouped bar chart creation
-import matplotlib.pyplot as plt  # Only imported for compatibility (consider alternatives)
-
-# Assuming your data is loaded into a Pandas DataFrame named 'data'
-
-categorical_variables = ['Gender', 'Age_Group', 'Status', 'Channel ', 'Category']
-
 # Function to create a grouped bar chart for a categorical variable
 def create_grouped_bar_chart(var):
-    fig, ax = plt.subplots(figsize=(10, 6))  # Create a figure and axis
-    sns.countplot(data=data, x=var, hue='Age_Group', ax=ax)  # Use seaborn for the chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.countplot(data=data, x=var, hue='Age_Group', ax=ax)
     ax.set_xlabel(var)
     ax.set_ylabel('Count')
     ax.set_title(f'Grouped bar chart of {var} by Age Group')
-
-    # Provide a list of tick positions (adjust based on your data)
-    tick_positions = [i for i, _ in enumerate(data[var].unique())]  # Assuming unique categories
-
-    # Set x-axis ticks with positions and optional rotation
+    tick_positions = [i for i, _ in enumerate(data[var].unique())]
     ax.set_xticks(tick_positions, labels=data[var].unique(), rotation=45)
-
     ax.legend(title='Age Group')
     return fig
 
-# Dropdown menu setup
-selected_var = st.sidebar.selectbox("Select Variable for Grouped Bar Chart(Age_Group):", options=categorical_variables)
+# Layout setup
+st.title("Data Analysis")
 
-# Conditional display based on selection (using 'if' statement for clarity)
-if selected_var:
-    fig = create_grouped_bar_chart(selected_var)
+# Create a row layout for dropdown menus
+col1, col2, col3 = st.columns(3)
 
-    # CSS styling (optional)
-    st.markdown("""
-    <style>
-        .element {
-            width: 50%;  /* Adjust width as needed */
-            float: left;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+# Dropdown menu for selecting categorical variables
+with col1:
+    selected_var1 = st.selectbox("Frequency Distribution:", categorical_variables)
+    #st.title(f"Frequency Distribution of {selected_var1}")
+    create_bar_chart(selected_var1)
 
-    with st.container():
-        st.pyplot(fig)  # Remove the 'class_' argument
-        st.write('<div class="element"></div>', unsafe_allow_html=True)  # Apply CSS class separately
+with col2:
+    selected_var2 = st.selectbox("Percentage Distribution:", categorical_variables)
+    #st.title(f'Percentage Distribution of {selected_var2}')
+    fig2 = create_pie_chart(selected_var2)
+    st.pyplot(fig2)
+
+with col3:
+    selected_var3 = st.selectbox("Grouped Bar Chart:", categorical_variables)
+    #st.title(f'Grouped Bar Chart of {selected_var3} by Age Group')
+    fig3 = create_grouped_bar_chart(selected_var3)
+    st.pyplot(fig3)
+
+
+
+###################
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+# Function to plot the histogram for top states
+def plot_top_states_histogram(num_states):
+    # Get the top states with the highest number of orders
+    top_states = data['ship_state'].value_counts().nlargest(num_states)
+
+    # Plotting the histogram
+    fig, ax = plt.subplots(figsize=(10, 6))
+    top_states.plot(kind='bar', ax=ax)
+
+    # Annotate each bar with its order count
+    for i, count in enumerate(top_states):
+        ax.text(i, count + 1, str(count), ha='center', va='bottom')
+
+    ax.set_title(f'Top {num_states} States with Highest Number of Orders')
+    ax.set_xlabel('State')
+    ax.set_ylabel('Number of Orders')
+    ax.set_xticklabels(top_states.index, rotation=45)
+    plt.tight_layout()
+    st.pyplot(fig)
+
+# Streamlit UI
+st.title('Top States with Highest Number of Orders')
+
+# Slider to select the number of states
+num_states = st.slider('Select Number of States', min_value=1, max_value=50, value=10, step=1)
+
+# Plot the histogram for selected number of states
+plot_top_states_histogram(num_states)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import pandas as pd
+import streamlit as st
+import matplotlib.pyplot as plt
+
+# Assuming your data is stored in a DataFrame called 'data'
+# Replace 'data.csv' with the actual path to your data file if it's in a CSV format
+
+
+# Group the data by 'ship-state' and 'ship-city', then count the orders for each city within each state
+state_city_orders = data.groupby(['ship_state', 'ship-city']).size().reset_index(name='order_count')
+
+# Function to get top 5 cities with maximum order count for each state
+def top_5_cities(df):
+    return df.nlargest(5, 'order_count')
+
+# Apply the function to get top 5 cities for each state
+top_cities_by_state = state_city_orders.groupby('ship_state').apply(top_5_cities)
+
+# Reset index to make 'ship-state' and 'ship-city' regular columns
+top_cities_by_state.reset_index(drop=True, inplace=True)
+
+# Streamlit app
+st.title('Top 5 Cities with Highest Number of Orders')
+
+# Dropdown menu for selecting ship state
+selected_state = st.selectbox('Select a Ship State:', top_cities_by_state['ship_state'].unique())
+
+# Get top cities and order counts for the selected state
+cities = top_cities_by_state[top_cities_by_state['ship_state'] == selected_state]['ship-city']
+order_counts = top_cities_by_state[top_cities_by_state['ship_state'] == selected_state]['order_count']
+
+# Plotting the histogram for ship cities
+plt.figure(figsize=(10, 6))
+plt.bar(cities, order_counts)
+plt.title('Top 5 Cities with Highest Number of Orders in {}'.format(selected_state))
+plt.xlabel('Ship City')
+plt.ylabel('Number of Orders')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# Display the plot using Streamlit
+st.pyplot(plt)
+
+
+
+############
 
 
 import streamlit as st
@@ -307,6 +385,10 @@ data = pd.DataFrame({'Date': dates, 'Amount': np.random.randn(len(dates))})
 # Render the forecast plot in Streamlit
 st.title("ARIMA Time-series Forecasting")
 generate_forecast_plot(data)
+
+
+
+
 
 
 
