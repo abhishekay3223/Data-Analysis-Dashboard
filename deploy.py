@@ -300,7 +300,7 @@ def generate_forecast_plot(data):
     forecast = model_fit.forecast(steps=forecast_steps)
 
     # Generate dates for the forecast period
-    forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='MS')[1:]
+    forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='M')[1:]
     
 
     
@@ -309,7 +309,7 @@ def generate_forecast_plot(data):
 
 # Sample data generation (replace this with your actual data)
 np.random.seed(0)
-dates = pd.date_range(start='2022-01-01', end='2023-12-31', freq='MS')
+dates = pd.date_range(start='2022-01-01', end='2023-12-31', freq='M')
 data = pd.DataFrame({'Date': dates, 'Amount': np.random.randn(len(dates))})
 
 # Render the forecast plot in Streamlit
@@ -342,7 +342,7 @@ def generate_forecast_plot(data):
     forecast = model_fit.forecast(steps=forecast_steps)
 
     # Generate dates for the forecast period
-    forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='MS')[1:]
+    forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='M')[1:]
 
     # Plot the actual data, original amount values, and forecast
     st.subheader("Time-series Forecasting with ARIMA")
