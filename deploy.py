@@ -322,7 +322,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 from statsmodels.tsa.arima.model import ARIMA
-
+import warnings
 def generate_forecast_plot(data):
     # Plot the original time series data
     st.subheader("Original Time Series Data")
