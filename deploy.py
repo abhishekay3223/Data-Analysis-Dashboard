@@ -357,7 +357,8 @@ def generate_forecast_plot(data):
     st.subheader("Forecasted Values:")
     forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': forecast})
     st.write(forecast_df)
-generate_forecast_plot(data)
+if st.button('Forecast'):
+    generate_forecast_plot(data)
 
 ########
 # Calculate error metrics
