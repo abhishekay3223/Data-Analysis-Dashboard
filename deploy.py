@@ -8,24 +8,98 @@ import warnings
 import seaborn as sns
 from sklearn.cluster import KMeans
 import os
+import warnings
+warnings.filterwarnings("ignore")
 st.set_page_config(page_title="Sales Dashboard",page_icon= "sales.png", layout="wide")
 st.title(":bar_chart: Sales Dashboard")
-#st.header('E-Commerce Sales Dashboard', divider='rainbow')
-#st.header('_Streamlit_ is :blue[cool] :sunglasses:')
-
 
 #created a dataframe
 data = pd.read_csv("Store Data.csv")
 
 #Configuring the page
+###########
+def rectify_state_names(state_name):
+  """
+  This function corrects the state name in the `ship-state` column based on a provided list of states and union territories of India.
+
+  Args:
+      state_name (str): The state name to be corrected.
+
+  Returns:
+      str: The corrected state name (or the original name if no correction is needed).
+  """
+
+  # Define a dictionary to map incorrect names to their corrected versions
+  state_corrections = {
+      "PUNJAB": "PUNJAB",
+      "HARYANA": "HARYANA",
+      "WEST BENGAL": "WEST BENGAL",
+      "TAMIL NADU": "TAMIL NADU",
+      "MAHARASHTRA": "MAHARASHTRA",
+      "KARNATAKA": "KARNATAKA",
+      "ANDHRA PRADESH": "ANDHRA PRADESH",
+      "KERALA": "KERALA",
+      "ASSAM": "ASSAM",
+      "TELANGANA": "TELANGANA",
+      "DELHI": "DELHI",
+      "ODISHA": "ODISHA",
+      "RAJASTHAN": "RAJASTHAN",
+      "UTTAR PRADESH": "UTTAR PRADESH",
+      "MADHYA PRADESH": "MADHYA PRADESH",
+      "UTTARAKHAND": "UTTARAKHAND",
+      "ANDAMAN & NICOBAR ": "ANDAMAN AND NICOBAR ISLANDS",  # Handle extra space
+      "GUJARAT": "GUJARAT",
+      "CHANDIGARH": "CHANDIGARH",
+      "JHARKHAND": "JHARKHAND",
+      "BIHAR": "BIHAR",
+      "HIMACHAL PRADESH": "HIMACHAL PRADESH",
+      "PUDUCHERRY": "PUDUCHERRY",
+      "DADRA AND NAGAR": "DADRA AND NAGAR HAVELI",
+      "SIKKIM": "SIKKIM",
+      "GOA": "GOA",
+      "ARUNACHAL PRADESH": "ARUNACHAL PRADESH",
+      "MANIPUR": "MANIPUR",
+      "JAMMU & KASHMIR": "JAMMU AND KASHMIR",
+      "TRIPURA": "TRIPURA",
+      "New Delhi": "NEW DELHI",  # Handle variations of Delhi
+      "CHHATTISGARH": "CHHATTISGARH",
+      "LADAKH": "LADAKH",
+      "MEGHALAYA": "MEGHALAYA",
+      "NAGALAND": "NAGALAND",
+      "MIZORAM": "MIZORAM",
+      # Handle lowercase variations (assuming these are typos)
+      "goa": "GOA",
+      "punjab": "PUNJAB",
+      "delhi": "NEW DELHI",
+      "nagaland": "NAGALAND",
+      "bihar": "BIHAR",
+      # Handle extra spaces (assuming these are typos)
+      "Arunachal pradesh": "ARUNACHAL PRADESH"
+  }
+
+  # Standardize the input state name (uppercase for consistency)
+  state_name = state_name.upper()
+
+  # Check if the state name exists in the correction dictionary
+  if state_name in state_corrections:
+    return state_corrections[state_name]
+  else:
+    # If no correction is found, return the original name
+    return state_name
+data['ship-city'] = data['ship-city'].str.upper()
+# Example usage (assuming your data is in a DataFrame called 'data')
+data['ship-state'] = data['ship-state'].apply(rectify_state_names)
+
+
+
+###########
+
+
+
+
 
 data.rename(columns={'Age Group': 'Age_Group', 'ship-state': 'ship_state'}, inplace=True)
 #sidebar
-import streamlit as st
-import pandas as pd
-# Sidebar
-
-##############
 
 ############
 
@@ -53,21 +127,6 @@ if st.checkbox("Show Filtered Data"):
     st.write(filtered_data)
 data=filtered_data
 
-
-
-agegroup = st.sidebar.multiselect(
-    "Select the Age Group:",
-    options = data["Age_Group"].unique(),
-    default = data["Age_Group"].unique()
-)
-
-
-
-gender = st.sidebar.multiselect(
-    "Select the Gender:",
-    options = data["Gender"].unique(),
-    default = data["Gender"].unique()
-)
 month = st.sidebar.multiselect(
     "Select the Month:",
     options = data["Month"].unique(),
@@ -81,7 +140,7 @@ shipstate = st.sidebar.multiselect(
 #`data` is your DataFrame
 
 
-df_selection = data.query("Age_Group == @agegroup & Gender == @gender & Month == @month & ship_state == @shipstate")
+df_selection = data.query(" Month == @month & ship_state == @shipstate")
 
 
 if st.checkbox("Show Data"):
@@ -110,16 +169,12 @@ with right_column:
 st.markdown("---")
 
 
-import streamlit as st
-import pandas as pd
-
-# Assuming your data is loaded into a Pandas DataFrame named 'data'
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Assuming your data is loaded into a Pandas DataFrame named 'data'
+
 
 numeric_variables = ['Age', 'Amount', 'Qty']
 cols = st.columns(len(numeric_variables))  # Create columns based on number of variables
@@ -143,8 +198,6 @@ import pandas as pd
 import plotly.express as px
 
 # Load data
-# Replace 'data.csv' with the actual path to your data file
-# data = pd.read_csv('data.csv')
 
 # Get the list of categorical variables
 categorical_variables = ['Gender', 'Age_Group', 'Status', 'Category']
@@ -154,7 +207,7 @@ def create_bar_chart(var):
     chart_data = data[var].value_counts().reset_index()
     chart_data.columns = [var, 'Count']
     fig = px.bar(chart_data, x=var, y='Count', labels={var: var, 'Count': 'Count'})
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, height=300, width=300)
 
 # Function to create a pie chart for a categorical variable using Plotly
 def create_pie_chart(var):
@@ -256,8 +309,6 @@ num_states = st.slider('Select Number of States', min_value=1, max_value=50, val
 selected_state = st.selectbox('Select a Ship State:', data['ship_state'].unique())
 
 # Plot both charts in a single row
-#st.subheader("Top States with Highest Number of Orders")
-#st.subheader(f"Top 5 Cities with Highest Number of Orders in {selected_state}")
 col1, col2 = st.columns(2)
 with col1:
     plot_top_states_histogram(num_states)
@@ -266,7 +317,6 @@ with col2:
 
 
 #########
-
 
 
 import streamlit as st
@@ -278,16 +328,6 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 def generate_forecast_plot(data):
-    # Check ACF and PACF plots to determine ARIMA parameters
-    #st.subheader("Autocorrelation Function (ACF)")
-    #fig, ax = plt.subplots()
-    #plot_acf(data['Amount'], ax=ax)
-    #st.pyplot(fig)
-
-    #st.subheader("Partial Autocorrelation Function (PACF)")
-    #fig, ax = plt.subplots()
-    #plot_pacf(data['Amount'], ax=ax)
-    #st.pyplot(fig)
 
     order = (0,0,6)
     seasonal_order = (0, 0, 2, 12)
@@ -301,10 +341,6 @@ def generate_forecast_plot(data):
 
     # Generate dates for the forecast period
     forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='M')[1:]
-    
-
-    
-
     
 
 # Sample data generation (replace this with your actual data)
@@ -360,26 +396,9 @@ def generate_forecast_plot(data):
 if st.button('Forecast'):
     generate_forecast_plot(data)
 
-########
-# Calculate error metrics
-order = (0,0,6)
-seasonal_order = (0, 0, 2, 12)
-model = ARIMA(data['Amount'], order=order, seasonal_order=seasonal_order)
-model_fit = model.fit()
-forecast_steps = 12
-forecast = model_fit.forecast(steps=forecast_steps)
-actual_values = data['Amount'].tail(12)
-mae = mean_absolute_error(actual_values, forecast)
-mse = mean_squared_error(actual_values, forecast)
-rmse = np.sqrt(mse)
-st.subheader("Error Metrics:")
-st.write("Mean Absolute Error (MAE):", mae)
-st.write("Mean Squared Error (MSE):", mse)
-st.write("Root Mean Squared Error (RMSE):", rmse)
 
-    # Calculate accuracy percentage for MSE
-accuracy_mse = round(100 * (1 - (mse / np.mean(np.square(actual_values - actual_values.mean())))), 2)
-st.write("Accuracy percentage (MSE):", accuracy_mse, "%")
+
+
 
 
 
