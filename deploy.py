@@ -382,7 +382,7 @@ def generate_forecast_plot(data):
 
     # Display forecasted values
     # st.subheader("Forecasted Values:")
-    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': abs(forecast*amount_constant)})
+    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': abs(forecast*amount_constant*30)})
     st.title('Forecasted Amount Viewer')
     selected_month = st.selectbox('Select Month ', forecast_df['Date'].dt.strftime('%B').unique())
     filtered_df = forecast_df[forecast_df['Date'].dt.strftime('%B') == selected_month]
