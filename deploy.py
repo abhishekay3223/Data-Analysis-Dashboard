@@ -351,11 +351,11 @@ from statsmodels.tsa.arima.model import ARIMA
 import warnings
 def generate_forecast_plot(data):
     # Plot the original time series data
-    st.subheader("Original Time Series Data")
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='lines', name='Actual'))
-    fig.update_layout(title='Original Time Series Data', xaxis_title='Date', yaxis_title='Amount')
-    st.plotly_chart(fig)
+    # st.subheader("Original Time Series Data")
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='lines', name='Actual'))
+    # fig.update_layout(title='Original Time Series Data', xaxis_title='Date', yaxis_title='Amount')
+    # st.plotly_chart(fig)
 
     order = (0,0,6)
     seasonal_order = (0, 0, 2, 12)
@@ -372,20 +372,22 @@ def generate_forecast_plot(data):
 
     # Plot the actual data, original amount values, and forecast
     amount_constant = 15000
-    st.subheader("Time-series Forecasting with ARIMA")
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='lines', name='Actual'))
-    fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='markers', name='Original Amount', marker=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=forecast_dates, y=forecast, mode='lines', name='Forecast', line=dict(color='red')))
-    fig.update_layout(title='Time-series Forecasting with ARIMA', xaxis_title='Date', yaxis_title='Amount')
-    st.plotly_chart(fig)
+    # st.subheader("Time-series Forecasting with ARIMA")
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='lines', name='Actual'))
+    # fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='markers', name='Original Amount', marker=dict(color='blue')))
+    # fig.add_trace(go.Scatter(x=forecast_dates, y=forecast, mode='lines', name='Forecast', line=dict(color='red')))
+    # fig.update_layout(title='Time-series Forecasting with ARIMA', xaxis_title='Date', yaxis_title='Amount')
+    # st.plotly_chart(fig)
 
     # Display forecasted values
-    st.subheader("Forecasted Values:")
+    # st.subheader("Forecasted Values:")
     forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': abs(forecast*amount_constant)})
-    st.write(forecast_df)
-if st.button('Forecast'):
-    generate_forecast_plot(data)
+    st.title('Forecasted Amount Viewer')
+    selected_month = st.selectbox('Select Month ', forecast_df['Date'].dt.strftime('%B').unique())
+    filtered_df = forecast_df[forecast_df['Date'].dt.strftime('%B') == selected_month]
+    st.table(filtered_df[['Date', 'Forecasted Amount']].reset_index(drop=True))
+generate_forecast_plot(data)
 
 
 
