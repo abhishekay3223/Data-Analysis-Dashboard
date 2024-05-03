@@ -245,10 +245,13 @@ with col3:
 
 #########
 
+
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+
 
 # Function to plot the histogram for top states using Plotly
 def plot_top_states_histogram(num_states):
@@ -257,19 +260,7 @@ def plot_top_states_histogram(num_states):
 
     # Plotting the histogram using Plotly
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=top_states.index, y=top_states.values))
-
-    # Annotate each bar with its order count
-    for i, count in enumerate(top_states):
-        fig.add_annotation(
-            x=top_states.index[i],
-            y=count + 1,
-            text=str(count),
-            showarrow=False,
-            font=dict(color='black', size=12),
-            xanchor='center',
-            yanchor='bottom'
-        )
+    fig.add_trace(go.Bar(x=top_states.index, y=top_states.values, text=top_states.values, textposition='auto'))
 
     fig.update_layout(
         title=f'Top {num_states} States with Highest Number of Orders',
@@ -289,7 +280,7 @@ def plot_top_cities_histogram(selected_state):
 
     # Plotting the histogram using Plotly
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=top_cities.index, y=top_cities.values))
+    fig.add_trace(go.Bar(x=top_cities.index, y=top_cities.values, text=top_cities.values, textposition='auto'))
 
     fig.update_layout(
         title=f'Top 5 Cities with Highest Number of Orders in {selected_state}',
@@ -314,7 +305,6 @@ with col1:
     plot_top_states_histogram(num_states)
 with col2:
     plot_top_cities_histogram(selected_state)
-
 
 #########
 
@@ -381,6 +371,7 @@ def generate_forecast_plot(data):
     forecast_dates = pd.date_range(start=data['Date'].iloc[-1], periods=forecast_steps + 1, freq='M')[1:]
 
     # Plot the actual data, original amount values, and forecast
+    amount_constant = 15000
     st.subheader("Time-series Forecasting with ARIMA")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data['Date'], y=data['Amount'], mode='lines', name='Actual'))
@@ -391,7 +382,7 @@ def generate_forecast_plot(data):
 
     # Display forecasted values
     st.subheader("Forecasted Values:")
-    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': forecast})
+    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted Amount': abs(forecast*amount_constant)})
     st.write(forecast_df)
 if st.button('Forecast'):
     generate_forecast_plot(data)
